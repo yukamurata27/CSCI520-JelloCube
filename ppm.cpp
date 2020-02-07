@@ -127,7 +127,9 @@ int ppm_write(char *file, Pic *pic)
     }
 
     /* Open the file for output */
-    ppm = fopen(file, "wb");
+    std::string foldername("screenshots");
+    std::string filename(file);
+    ppm = fopen((foldername+"/"+file).c_str(), "wb");
     if( !ppm )
 	return FALSE;
 

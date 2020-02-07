@@ -12,6 +12,9 @@
 #include "showCube.h"
 #include "input.h"
 #include "physics.h"
+#include <iostream>
+#include "string.h"
+#include "stdio.h"
 
 // camera parameters
 double Theta = pi / 6;
@@ -218,6 +221,8 @@ void doIdle()
   if (pause == 0)
   {
     // insert code which appropriately performs one step of the cube simulation:
+    if (strcmp(jello.integrator, "RK4") == 0) RK4(&jello);
+    else Euler(&jello);
   }
 
   glutPostRedisplay();
