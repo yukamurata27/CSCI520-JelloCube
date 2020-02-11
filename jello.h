@@ -102,9 +102,9 @@ extern struct world jello;
 // double x,y,z
 #define pMAKE(x,y,z,dest)\
 \
-  (dest).(x) = (x);\
-  (dest).(y) = (y);\
-  (dest).(z) = (z);
+  (dest).x = (x);\
+  (dest).y = (y);\
+  (dest).z = (z);
 
 // sums points src1 and src2 to dest
 // struct point src1,src2,dest
@@ -130,6 +130,18 @@ extern struct world jello;
   (dest).x = (src).x * (scalar);\
   (dest).y = (src).y * (scalar);\
   (dest).z = (src).z * (scalar);
+
+// len = |src|
+#define pLENGTH(src,len)\
+\
+  len = sqrt( (src).x * (src).x + (src).y * (src).y + (src).z * (src).z );
+
+// dest = (0, 0, 0)
+#define pINIT(dest)\
+\
+  (dest).x = 0;\
+  (dest).y = 0;\
+  (dest).z = 0;
 
 #endif
 
