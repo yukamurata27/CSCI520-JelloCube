@@ -11,24 +11,34 @@
 #include <iostream>
 using namespace std;
 
-/*
-void kx(struct world * jello, struct point A, struct point B, struct point flocal)
+void SpringSystemHelper(struct world * jello, struct point indexA, struct point indexB, struct point &f)
 {
-  double Llen, diff, R=1/7;
-  point L; // L = B->A
+  int Ax = indexA.x, Ay = indexA.y, Az = indexA.z;
+  int Bx = indexB.x, By = indexB.y, Bz = indexB.z;
+  double Llen, diff, dotProdRes, R=1/7;
+  point A, B, L, FTmp, vecDiff;
 
+  pCPY(jello->p[Ax][Ay][Az], A);
+  pCPY(jello->p[Bx][By][Bz], B);
   pDIFFERENCE(A, B, L);
   pLENGTH(L, Llen);
-  diff = Llen - R;
-  pMULTIPLY(L, -jello->kElastic*diff/Llen, flocal);
-}
-*/
 
-void Hook(struct world * jello, struct point f[8][8][8])
+  // Hook's law
+  diff = Llen - R;
+  pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
+  pSUM(f, FTmp, f);
+
+  // Damping force
+  pDIFFERENCE(jello->v[Ax][Ay][Az], jello->v[Bx][By][Bz], vecDiff); // vecDiff = vA - vB
+  pDOTPRODUCT(vecDiff, L, dotProdRes);
+  pMULTIPLY(L, -jello->dElastic*dotProdRes/Llen/Llen, FTmp);
+  pSUM(f, FTmp, f);
+}
+
+void SpringSystem(struct world * jello, struct point f[8][8][8])
 {
   int i, j, k;
-  double Llen, diff, R=1/7;
-  point A, B, L, FTmp;
+  point indexA, indexB;
 
   for (i=0; i<=7; i++)
     for (j=0; j<=7; j++)
@@ -36,280 +46,214 @@ void Hook(struct world * jello, struct point f[8][8][8])
       {
         // Initialize
         pINIT(f[i][j][k]);
-        pCPY(jello->p[i][j][k], A);
+        indexA.x = i;
+        indexA.y = j;
+        indexA.z = k;
 
         // Structural springs (6 connections)
         if (i != 0) {
-          pCPY(jello->p[i-1][j][k], B);
-          //kx(jello, A, B, FTmp);
-          //pSUM(f[i][j][k], FTmp, f[i][j][k]);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i-1;
+          indexB.y = j;
+          indexB.z = k;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 7) {
-          pCPY(jello->p[i+1][j][k], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i+1;
+          indexB.y = j;
+          indexB.z = k;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (j != 0) {
-          pCPY(jello->p[i][j-1][k], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i;
+          indexB.y = j-1;
+          indexB.z = k;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (j != 7) {
-          pCPY(jello->p[i][j+1][k], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i;
+          indexB.y = j+1;
+          indexB.z = k;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (k != 0) {
-          pCPY(jello->p[i][j][k-1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i;
+          indexB.y = j;
+          indexB.z = k-1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (k != 7) {
-          pCPY(jello->p[i][j][k+1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i;
+          indexB.y = j;
+          indexB.z = k+1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
 
         //cout << "Result: " << f[i][j][k].x << ", " << f[i][j][k].y << ", " << f[i][j][k].z << endl;
 
         // Shear springs (20 connections)
-        ////////// On x = 0 plane //////////
+        // On x = 0 plane
         if (j != 0 && k != 0) {
-          pCPY(jello->p[i][j-1][k-1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i;
+          indexB.y = j-1;
+          indexB.z = k-1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (j != 0 && k != 7) {
-          pCPY(jello->p[i][j-1][k+1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i;
+          indexB.y = j-1;
+          indexB.z = k+1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (j != 7 && k != 0) {
-          pCPY(jello->p[i][j+1][k-1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i;
+          indexB.y = j+1;
+          indexB.z = k-1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (j != 7 && k != 7) {
-          pCPY(jello->p[i][j+1][k+1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i;
+          indexB.y = j+1;
+          indexB.z = k+1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
-        ////////// On y = 0 plane //////////
+        // On y = 0 plane
         if (i != 0 && k != 0) {
-          pCPY(jello->p[i-1][j][k-1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i-1;
+          indexB.y = j;
+          indexB.z = k-1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 0 && k != 7) {
-          pCPY(jello->p[i-1][j][k+1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i-1;
+          indexB.y = j;
+          indexB.z = k+1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 7 && k != 0) {
-          pCPY(jello->p[i+1][j][k-1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i+1;
+          indexB.y = j;
+          indexB.z = k-1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 7 && k != 7) {
-          pCPY(jello->p[i+1][j][k+1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i+1;
+          indexB.y = j;
+          indexB.z = k+1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
-        ////////// On z = 0 plane //////////
+        // On z = 0 plane
         if (i != 0 && j != 0) {
-          pCPY(jello->p[i-1][j-1][k], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i-1;
+          indexB.y = j-1;
+          indexB.z = k;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 0 && j != 7) {
-          pCPY(jello->p[i-1][j+1][k], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i-1;
+          indexB.y = j+1;
+          indexB.z = k;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 7 && j != 0) {
-          pCPY(jello->p[i+1][j-1][k], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i+1;
+          indexB.y = j-1;
+          indexB.z = k;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 7 && j != 7) {
-          pCPY(jello->p[i+1][j+1][k], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i+1;
+          indexB.y = j+1;
+          indexB.z = k;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
-        ////////// Diagonal //////////
+        // Diagonal
         if (i != 0 && j != 0 && k != 0) {
-          pCPY(jello->p[i-1][j-1][k-1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i-1;
+          indexB.y = j-1;
+          indexB.z = k-1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 0 && j != 0 && k != 7) {
-          pCPY(jello->p[i-1][j-1][k+1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i-1;
+          indexB.y = j-1;
+          indexB.z = k+1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 0 && j != 7 && k != 0) {
-          pCPY(jello->p[i-1][j+1][k-1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i-1;
+          indexB.y = j+1;
+          indexB.z = k-1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 0 && j != 7 && k != 7) {
-          pCPY(jello->p[i-1][j+1][k+1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i-1;
+          indexB.y = j+1;
+          indexB.z = k+1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 7 && j != 0 && k != 0) {
-          pCPY(jello->p[i+1][j-1][k-1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i+1;
+          indexB.y = j-1;
+          indexB.z = k-1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 7 && j != 0 && k != 7) {
-          pCPY(jello->p[i+1][j-1][k+1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i+1;
+          indexB.y = j-1;
+          indexB.z = k+1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 7 && j != 7 && k != 0) {
-          pCPY(jello->p[i+1][j+1][k-1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i+1;
+          indexB.y = j+1;
+          indexB.z = k-1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i != 7 && j != 7 && k != 7) {
-          pCPY(jello->p[i+1][j+1][k+1], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i+1;
+          indexB.y = j+1;
+          indexB.z = k+1;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
 
         //cout << "Result: " << f[i][j][k].x << ", " << f[i][j][k].y << ", " << f[i][j][k].z << endl;
 
         // Bend springs (6 connections)
         if (i > 1) {
-          pCPY(jello->p[i-2][j][k], B);
-          //kx(jello, A, B, FTmp);
-          //pSUM(f[i][j][k], FTmp, f[i][j][k]);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i-2;
+          indexB.y = j;
+          indexB.z = k;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (i < 6) {
-          pCPY(jello->p[i+2][j][k], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i+2;
+          indexB.y = j;
+          indexB.z = k;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (j > 1) {
-          pCPY(jello->p[i][j-2][k], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i;
+          indexB.y = j-2;
+          indexB.z = k;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (j < 6) {
-          pCPY(jello->p[i][j+2][k], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i;
+          indexB.y = j+2;
+          indexB.z = k;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (k > 1) {
-          pCPY(jello->p[i][j][k-2], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i;
+          indexB.y = j;
+          indexB.z = k-2;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
         if (k < 6) {
-          pCPY(jello->p[i][j][k+2], B);
-          pDIFFERENCE(A, B, L);
-          pLENGTH(L, Llen);
-          diff = Llen - R;
-          pMULTIPLY(L, -jello->kElastic*diff/Llen, FTmp);
-          pSUM(f[i][j][k], FTmp, f[i][j][k]);
+          indexB.x = i;
+          indexB.y = j;
+          indexB.z = k+2;
+          SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
 
         //cout << "Result: " << f[i][j][k].x << ", " << f[i][j][k].y << ", " << f[i][j][k].z << endl;
@@ -322,8 +266,8 @@ void Hook(struct world * jello, struct point f[8][8][8])
 void computeAcceleration(struct world * jello, struct point a[8][8][8])
 {
   int i, j, k;
-  point FAll[8][8][8], FHook[8][8][8], FDump[8][8][8], FForceField[8][8][8];
-  Hook(jello, FHook);
+  point FAll[8][8][8], FSpring[8][8][8], FForceField[8][8][8];
+  SpringSystem(jello, FSpring);
 
 
   // Initialize variables
@@ -339,7 +283,7 @@ void computeAcceleration(struct world * jello, struct point a[8][8][8])
     for (j=0; j<=7; j++)
       for (k=0; k<=7; k++)
       {
-        pSUM(FAll[i][j][k], FHook[i][j][k], FAll[i][j][k]);
+        pSUM(FAll[i][j][k], FSpring[i][j][k], FAll[i][j][k]);
       }
 
   // a = FAll / m

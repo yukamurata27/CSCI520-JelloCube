@@ -66,7 +66,7 @@ extern struct world jello;
 #define CROSSPRODUCTp(vector1,vector2,dest)\
   CROSSPRODUCT( (vector1).x, (vector1).y, (vector1).z,\
                 (vector2).x, (vector2).y, (vector2).z,\
-                (dest).x, (dest).y, (dest).z )
+                (dest).x, (dest).y, (dest).z );
 
 // computes crossproduct of three vectors, which are specified by floating-point coordinates
 // double x1,y1,z1,x2,y2,z2,x,y,z
@@ -75,7 +75,14 @@ extern struct world jello;
 \
   x = (y1) * (z2) - (y2) * (z1);\
   y = (x2) * (z1) - (x1) * (z2);\
-  z = (x1) * (y2) - (x2) * (y1)
+  z = (x1) * (y2) - (x2) * (y1);
+
+// computes dotproduct of two vectors, which are given as points
+// struct point vector1, vector2, dest
+// result goes into res
+#define pDOTPRODUCT(vector1,vector2,res)\
+\
+  res = (vector1).x * (vector2).x + (vector1).y * (vector2).y + (vector1).z * (vector2).z;
 
 // normalizes vector dest
 // struct point dest
