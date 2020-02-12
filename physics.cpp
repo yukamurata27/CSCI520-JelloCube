@@ -15,7 +15,7 @@ void SpringSystemHelper(struct world * jello, struct point indexA, struct point 
 {
   int Ax = indexA.x, Ay = indexA.y, Az = indexA.z;
   int Bx = indexB.x, By = indexB.y, Bz = indexB.z;
-  double Llen, diff, dotProdRes, R=1/7;
+  double Llen, diff, dotProdRes, R=1./7;
   point A, B, L, FTmp, vecDiff;
 
   pCPY(jello->p[Ax][Ay][Az], A);
@@ -260,15 +260,67 @@ void SpringSystem(struct world * jello, struct point f[8][8][8])
       }
 }
 
+void CollisionDetectionHelper(struct world * jello, struct point p, struct point &f)
+{
+  //int Ax = indexA.x, Ay = indexA.y, Az = indexA.z;
+  //int Bx = indexB.x, By = indexB.y, Bz = indexB.z;
+  double Llen, diff, dotProdRes, R=0.;
+  point A, B, L, FTmp, vecDiff;
+
+  //pCPY(jello->p[Ax][Ay][Az], A);
+  //pCPY(jello->p[Bx][By][Bz], B);
+  //pDIFFERENCE(A, B, L);
+
+  /*
+  pLENGTH(L, Llen);
+
+  // Hook's law
+  diff = Llen - R;
+  pMULTIPLY(L, -jello->kCollision*diff/Llen, FTmp);
+  pSUM(f, FTmp, f);
+
+  // Damping force
+  point vec0(0, 0, 0);
+  pDIFFERENCE(jello->v[Ax][Ay][Az], vec0, vecDiff); // vecDiff = vA - vB
+  pDOTPRODUCT(vecDiff, L, dotProdRes);
+  pMULTIPLY(L, -jello->dCollision*dotProdRes/Llen/Llen, FTmp);
+  pSUM(f, FTmp, f);
+  */
+}
+
+bool isOutOfBox(struct point p)
+{
+  return p.x < -4 || p.y < -4 || p.z < -4 || 4 < p.x || 4 < p.y || 4 < p.z;
+}
+
+void CollisionDetection(struct world * jello, struct point f[8][8][8])
+{
+  int i, j, k;
+  point indexA, indexB;
+
+  for (i=0; i<=7; i++)
+    for (j=0; j<=7; j++)
+      for (k=0; k<=7; k++)
+      {
+        // Initialize
+        pINIT(f[i][j][k]);
+
+        if (isOutOfBox(jello->p[i][j][k]))
+        {
+          return;
+        }
+      }
+}
+
 /* Computes acceleration to every control point of the jello cube, 
    which is in state given by 'jello'.
    Returns result in array 'a'. */
 void computeAcceleration(struct world * jello, struct point a[8][8][8])
 {
   int i, j, k;
-  point FAll[8][8][8], FSpring[8][8][8], FForceField[8][8][8];
+  point FAll[8][8][8], FSpring[8][8][8], FPenalty[8][8][8], FForceField[8][8][8];
   SpringSystem(jello, FSpring);
-
+  CollisionDetection(jello, FPenalty);
 
   // Initialize variables
   for (i=0; i<=7; i++)
