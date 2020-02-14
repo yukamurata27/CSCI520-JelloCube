@@ -155,6 +155,9 @@ void showCube(struct world * jello)
   {
     glPolygonMode(GL_FRONT, GL_FILL); 
     
+    //glEnable(GL_TEXTURE_2D);
+    //glBindTexture(GL_TEXTURE_2D, texture);
+
     for (face=1; face <= 6; face++) 
       // face == face of a cube
       // 1 = bottom, 2 = front, 3 = left, 4 = right, 5 = far, 6 = top
@@ -210,13 +213,19 @@ void showCube(struct world * jello)
             glFrontFace(GL_CCW); // the usual definition of front face
           else
             glFrontFace(GL_CW); // flip definition of orientation
-         
+
           glBegin(GL_TRIANGLE_STRIP);
           for (i=0; i<=7; i++)
           {
+            int myidx = floor(i/2);
+            //glTexCoord2i(0, myidx/3);
+            //glNormal3f(1, 1, 1);
             glNormal3f(normal[i][j].x / counter[i][j],normal[i][j].y / counter[i][j],
               normal[i][j].z / counter[i][j]);
             glVertex3f(NODE(face,i,j).x, NODE(face,i,j).y, NODE(face,i,j).z);
+            
+            //glTexCoord2i(1, myidx/3);
+            //glNormal3f(0, 0, 0);
             glNormal3f(normal[i][j-1].x / counter[i][j-1],normal[i][j-1].y/ counter[i][j-1],
               normal[i][j-1].z / counter[i][j-1]);
             glVertex3f(NODE(face,i,j-1).x, NODE(face,i,j-1).y, NODE(face,i,j-1).z);
@@ -225,7 +234,10 @@ void showCube(struct world * jello)
         }
         
         
-    }  
+    }
+    //glDisable(GL_TEXTURE_2D);
+    //glBindTexture(GL_TEXTURE_2D, 0);
+
   } // end for loop over faces
   glFrontFace(GL_CCW);
 }
@@ -287,6 +299,58 @@ void showBoundingBox()
   }
   
   glEnd();
+
+  return;
+}
+
+void showSmallBox()
+{
+  int i,j;
+
+  //glColor4f(0.6,0.2,0.2,0);
+  glDisable(GL_CULL_FACE);
+
+  //glColor3f(0.99607843137f, 0.49803921568f, 0.61176470588f);
+  //glColor3f(0.67843137254f, 0.84705882352f, 0.90196078431f);
+  //glColor3f(0.30588235294f, 0.89411764705f, 0.30588235294f);
+
+  glBegin(GL_QUADS);
+  // right
+  //glEnable(GL_TEXTURE_2D);
+  //glBindTexture(GL_TEXTURE_2D, texture);
+
+  //glColor3f(0.99607843137f, 0.49803921568f, 0.61176470588f);
+  glNormal3f(0.0f, 1.0f, 0.0f);
+
+  //glTexCoord2i(0, 0);
+  glVertex3f(-2.0f, -0.5f, -0.5f); // UR
+  //glTexCoord2i(0, 0);
+  glVertex3f(-0.5f, -0.5f, -0.5f); // UL
+  //glTexCoord2i(1, 1);
+  glVertex3f(-0.5f, -0.5f, -2.0f); // BL
+  //glTexCoord2i(1, 1);
+  glVertex3f(-2.0f, -0.5f, -2.0f); // BR
+  //glDisable(GL_TEXTURE_2D);
+
+  // top
+  glColor3f(0.67843137254f, 0.84705882352f, 0.90196078431f);
+  glNormal3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(-0.5f, -2.0f, -0.5f);
+  glVertex3f(-0.5f, -0.5f, -0.5f);
+  glVertex3f(-2.0f, -0.5f, -0.5f);
+  glVertex3f(-2.0f, -2.0f, -0.5f);
+
+  // front
+  //glColor3f(0.30588235294f, 0.89411764705f, 0.30588235294f);
+  glNormal3f(1.0f, 0.0f, 0.0f);
+  glVertex3f(-0.5f, -0.5f, -2.0f);
+  glVertex3f(-0.5f, -0.5f, -0.5f);
+  glVertex3f(-0.5f, -2.0f, -0.5f);
+  glVertex3f(-0.5f, -2.0f, -2.0f);
+
+  glEnd();
+
+  glEnable(GL_CULL_FACE);
 
   return;
 }

@@ -30,6 +30,10 @@ extern int sprite;
 extern int g_vMousePos[2];
 extern int g_iLeftMouseButton,g_iMiddleMouseButton,g_iRightMouseButton;
 
+// Texture
+extern GLuint texture;
+//extern Pic mypic;
+
 struct point 
 {
    double x;
@@ -107,11 +111,11 @@ extern struct world jello;
 // assigns values x,y,z to point vector dest
 // struct point dest
 // double x,y,z
-#define pMAKE(x,y,z,dest)\
+#define pMAKE(x1,y1,z1,dest)\
 \
-  (dest).x = (x);\
-  (dest).y = (y);\
-  (dest).z = (z);
+  (dest).x = (x1);\
+  (dest).y = (y1);\
+  (dest).z = (z1);
 
 // sums points src1 and src2 to dest
 // struct point src1,src2,dest

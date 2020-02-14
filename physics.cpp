@@ -263,7 +263,6 @@ void SpringSystem(struct world * jello, struct point f[8][8][8])
 void CollisionDetectionHelper(struct world * jello, struct point indices, struct point &f)
 {
   int px = indices.x, py = indices.y, pz = indices.z;
-  //int Bx = indexB.x, By = indexB.y, Bz = indexB.z;
   double Llen, diff, dotProdRes, R=0.;
   point pOut, pSurface, L, FTmp, vecDiff;
 
@@ -285,7 +284,7 @@ void CollisionDetectionHelper(struct world * jello, struct point indices, struct
 
   // Damping force
   point vec0 = {0, 0, 0};
-  pDIFFERENCE(jello->v[px][py][pz], vec0, vecDiff); // vecDiff = vA - vB
+  pDIFFERENCE(jello->v[px][py][pz], vec0, vecDiff);
   pDOTPRODUCT(vecDiff, L, dotProdRes);
   pMULTIPLY(L, -jello->dCollision*dotProdRes/Llen/Llen, FTmp);
   pSUM(f, FTmp, f);
@@ -321,22 +320,45 @@ void ForceField(struct world * jello, struct point f[8][8][8])
   if (jello->resolution == 0) return;
   
   int i, j, k;
+  point Pshift, offset = {2.0, 2.0, 2.0};
 
   for (i=0; i<=7; i++)
     for (j=0; j<=7; j++)
       for (k=0; k<=7; k++)
       {
+        // Sweep out mass point which is out of range
+        /*
+        if (jello->p[i][j][k].x < -2.0 || 2.0 < jello->p[i][j][k].x) continue;
+        if (jello->p[i][j][k].y < -2.0 || 2.0 < jello->p[i][j][k].y) continue;
+        if (jello->p[i][j][k].z < -2.0 || 2.0 < jello->p[i][j][k].z) continue;
+        */
+
         // Initialize
-        pINIT(f[i][j][k]);
-        double interval = jello->resolution/8.; // Or divided by 7????
-        double xpos = i/interval, ypos = j/interval, zpos = k/interval;
+        pSUM(jello->p[i][j][k], offset, Pshift);
+        //if (i == 5 && j == 0 && k == 3) cout << "Current jello p(" << i << ", " << j << ", " << k << "): " << jello->p[i][j][k].x << ", " << jello->p[i][j][k].y << ", " << jello->p[i][j][k].z << endl;
+        //if (isnan(jello->p[i][j][k]) || isnan(jello->p[i][j][k]) || isnan(jello->p[i][j][k])) continue;
+
+        if (4.0 < Pshift.x) Pshift.x = 4.0;
+        else if (Pshift.x < 0.0) Pshift.x = 0.0;
+        if (4.0 < Pshift.y) Pshift.y = 4.0;
+        else if (Pshift.y < 0.0) Pshift.y = 0.0;
+        if (4.0 < Pshift.z) Pshift.z = 4.0;
+        else if (Pshift.z < 0.0) Pshift.z = 0.0;
+        //if (i == 5 && j == 0 && k == 3) cout << "Current jello p(" << i << ", " << j << ", " << k << "): " << Pshift.x << ", " << Pshift.y << ", " << Pshift.z << endl;
+        //if (i == 5 && j == 0 && k == 1) cout << "Current jello p(" << i << ", " << j << ", " << k << "): " << Pshift.x << ", " << Pshift.y << ", " << Pshift.z << endl;
+
+        double xpos = Pshift.x / 4.0 * (jello->resolution-1); // x coord in force field
+        double ypos = Pshift.y / 4.0 * (jello->resolution-1); // y coord in force field
+        double zpos = Pshift.z / 4.0 * (jello->resolution-1); // z coord in force field
         int xindices[2] = {floor(xpos), ceil(xpos)};
         int yindices[2] = {floor(ypos), ceil(ypos)};
         int zindices[2] = {floor(zpos), ceil(zpos)};
-        double alpha = (xpos-floor(xpos))/interval;
-        double beta = (ypos-floor(ypos))/interval;
-        double gamma = (zpos-floor(zpos))/interval;
+        double alpha = xpos - floor(xpos);
+        double beta =  ypos - floor(ypos);
+        double gamma = zpos - floor(zpos);
+        //cout << "Result: " << xpos << ", " << ypos << ", " << zpos << endl;
         //cout << "Result: " << alpha << ", " << beta << ", " << gamma << endl;
+        //if (i == 5 && j == 0 && k == 1) cout << "Result: " << alpha << ", " << beta << ", " << gamma << ", " << xindices[0] << ", " << xindices[1] << ", " << yindices[0] << ", " << yindices[1] << ", " << zindices[0] << ", " << zindices[1]<< endl;
 
         point Fxyz, Fx1yz, Fxy1z, Fxyz1, Fx1y1z, Fx1yz1, Fxy1z1, Fx1y1z1;
         pCPY(jello->forceField[xindices[0] * jello->resolution * jello->resolution + yindices[0] * jello->resolution + zindices[0]], Fxyz);
@@ -353,7 +375,8 @@ void ForceField(struct world * jello, struct point f[8][8][8])
           alpha*beta*gamma*Fx1y1z1.y + (1-alpha)*beta*gamma*Fxy1z1.y + alpha*(1-beta)*gamma*Fx1yz1.y + alpha*beta*(1-gamma)*Fx1y1z.y + (1-alpha)*(1-beta)*gamma*Fxyz1.y + (1-alpha)*beta*(1-gamma)*Fxy1z.y + alpha*(1-beta)*(1-gamma)*Fx1yz.y + (1-alpha)*(1-beta)*(1-gamma)*Fxyz.y,
           alpha*beta*gamma*Fx1y1z1.z + (1-alpha)*beta*gamma*Fxy1z1.z + alpha*(1-beta)*gamma*Fx1yz1.z + alpha*beta*(1-gamma)*Fx1y1z.z + (1-alpha)*(1-beta)*gamma*Fxyz1.z + (1-alpha)*beta*(1-gamma)*Fxy1z.z + alpha*(1-beta)*(1-gamma)*Fx1yz.z + (1-alpha)*(1-beta)*(1-gamma)*Fxyz.z
         };
-        pSUM(f[i][j][k], interpF, f[i][j][k])
+        pMAKE(interpF.x, interpF.y, interpF.z, f[i][j][k]);
+        //pSUM(f[i][j][k], interpF, f[i][j][k]);
         //cout << "Result: " << f[i][j][k].x << ", " << f[i][j][k].y << ", " << f[i][j][k].z << endl;
       }
 }

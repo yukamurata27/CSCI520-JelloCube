@@ -15,6 +15,7 @@
 #include <iostream>
 #include "string.h"
 #include "stdio.h"
+//#include "pic.h"
 
 // camera parameters
 double Theta = pi / 6;
@@ -36,6 +37,54 @@ struct world jello;
 
 int windowWidth, windowHeight;
 
+GLuint texture;
+//Pic mypic;
+
+GLuint LoadTexture( const char * filename )
+{
+  GLuint texture;
+
+  int width, height;
+
+  unsigned char * data;
+
+  FILE * file;
+
+  file = fopen( filename, "rb" );
+
+  if ( file == NULL ) return 0;
+  width = 1024;
+  height = 512;
+  data = (unsigned char *)malloc( width * height * 3 );
+  //int size = fseek(file,);
+  fread( data, width * height * 3, 1, file );
+  fclose( file );
+
+  for(int i = 0; i < width * height ; ++i)
+  {
+    int index = i*3;
+    unsigned char B,R;
+    B = data[index];
+    R = data[index+2];
+
+    data[index] = R;
+    data[index+2] = B;
+  }
+
+  glGenTextures( 1, &texture );
+  glBindTexture( GL_TEXTURE_2D, texture );
+  glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_MODULATE );
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST );
+
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR );
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,GL_REPEAT );
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,GL_REPEAT );
+  gluBuild2DMipmaps( GL_TEXTURE_2D, 3, width, height,GL_RGB, GL_UNSIGNED_BYTE, data );
+  free( data );
+
+  return texture;
+}
+
 void myinit()
 {
   glMatrixMode(GL_PROJECTION);
@@ -51,6 +100,13 @@ void myinit()
   glShadeModel(GL_SMOOTH);
   glEnable(GL_POLYGON_SMOOTH);
   glEnable(GL_LINE_SMOOTH);
+
+  //texture = 0;
+  //ppm_read("img/jello.ppm", pic_alloc(319, 240, 3, &mypic));
+  //LoadTexture("img/flower.bmp", 319, 240);
+  //texture = LoadTexture("img/flower.bmp", 319, 240);
+  //glBindTexture(GL_TEXTURE_2D, texture);
+  texture= LoadTexture("img/jello.bmp");
 
   return; 
 }
@@ -191,6 +247,7 @@ void display()
 
   // show the bounding box
   showBoundingBox();
+  showSmallBox();
  
   glutSwapBuffers();
 }
