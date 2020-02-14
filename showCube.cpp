@@ -214,23 +214,28 @@ void showCube(struct world * jello)
           else
             glFrontFace(GL_CW); // flip definition of orientation
 
+          glEnable(GL_BLEND);
+          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
           glBegin(GL_TRIANGLE_STRIP);
           for (i=0; i<=7; i++)
           {
             int myidx = floor(i/2);
             //glTexCoord2i(0, myidx/3);
             //glNormal3f(1, 1, 1);
-            glNormal3f(normal[i][j].x / counter[i][j],normal[i][j].y / counter[i][j],
-              normal[i][j].z / counter[i][j]);
+            glColor4f(1.0, 0.76862745098, 0.89411764705, 0.1);
+            //glNormal3f(normal[i][j].x / counter[i][j],normal[i][j].y / counter[i][j],
+              //normal[i][j].z / counter[i][j]);
             glVertex3f(NODE(face,i,j).x, NODE(face,i,j).y, NODE(face,i,j).z);
             
             //glTexCoord2i(1, myidx/3);
             //glNormal3f(0, 0, 0);
-            glNormal3f(normal[i][j-1].x / counter[i][j-1],normal[i][j-1].y/ counter[i][j-1],
-              normal[i][j-1].z / counter[i][j-1]);
+            //glNormal3f(normal[i][j-1].x / counter[i][j-1],normal[i][j-1].y/ counter[i][j-1],
+              //normal[i][j-1].z / counter[i][j-1]);
+            glColor4f(1.0, 0.76862745098, 0.89411764705, 0.1);
             glVertex3f(NODE(face,i,j-1).x, NODE(face,i,j-1).y, NODE(face,i,j-1).z);
           }
           glEnd();
+          glDisable(GL_BLEND);
         }
         
         
@@ -305,70 +310,68 @@ void showBoundingBox()
 
 void showSmallBox()
 {
-  int i,j;
-
-  //glColor4f(0.6,0.2,0.2,0);
-  glDisable(GL_CULL_FACE);
-
   //glColor3f(0.99607843137f, 0.49803921568f, 0.61176470588f);
   //glColor3f(0.67843137254f, 0.84705882352f, 0.90196078431f);
   //glColor3f(0.30588235294f, 0.89411764705f, 0.30588235294f);
 
-  glBegin(GL_QUADS);
-  // right
-  //glEnable(GL_TEXTURE_2D);
-  //glBindTexture(GL_TEXTURE_2D, texture);
+  glBegin(GL_QUADS); // Normal is RHS coord
 
-  //glColor3f(0.99607843137f, 0.49803921568f, 0.61176470588f);
-  glNormal3f(0.0f, 1.0f, 0.0f);
-
-  //glTexCoord2i(0, 0);
-  glVertex3f(-2.0f, -0.5f, -0.5f); // UR
-  //glTexCoord2i(0, 0);
-  glVertex3f(-0.5f, -0.5f, -0.5f); // UL
-  //glTexCoord2i(1, 1);
-  glVertex3f(-0.5f, -0.5f, -2.0f); // BL
-  //glTexCoord2i(1, 1);
-  glVertex3f(-2.0f, -0.5f, -2.0f); // BR
-  //glDisable(GL_TEXTURE_2D);
-
-  // top
-  glColor3f(0.67843137254f, 0.84705882352f, 0.90196078431f);
+  // Top
+  glColor3f(0.7f, 0.7f, 0.7f);
   glNormal3f(0.0f, 0.0f, 1.0f);
-  glVertex3f(-0.5f, -2.0f, -0.5f);
-  glVertex3f(-0.5f, -0.5f, -0.5f);
-  glVertex3f(-2.0f, -0.5f, -0.5f);
-  glVertex3f(-2.0f, -2.0f, -0.5f);
+  glVertex3f(-0.3f, 0.0f, 0.3f);
+  glVertex3f(-0.3f, 2.0f, 0.3f);
+  glVertex3f(-2.0f, 2.0f, 0.3f);
+  glVertex3f(-2.0f, 0.0f, 0.3f);
 
-  // front
-  //glColor3f(0.30588235294f, 0.89411764705f, 0.30588235294f);
+  // Left
+  glColor3f(0.45, 0.45f, 0.45f);
+  glVertex3f(-2.0f, 0.0f, 0.3f); // UR 1
+  glVertex3f(-2.0f, 0.0f, -2.0f); // BR 4
+  glVertex3f(-0.3f, 0.0f, -2.0f); // BL 3
+  glVertex3f(-0.3f, 0.0f, 0.3f); // UL 2
+
+  // Front
+  glColor3f(0.2f, 0.2f, 0.2f);
   glNormal3f(1.0f, 0.0f, 0.0f);
-  glVertex3f(-0.5f, -0.5f, -2.0f);
-  glVertex3f(-0.5f, -0.5f, -0.5f);
-  glVertex3f(-0.5f, -2.0f, -0.5f);
-  glVertex3f(-0.5f, -2.0f, -2.0f);
+  glVertex3f(-0.3f, 2.0f, -2.0f);
+  glVertex3f(-0.3f, 2.0f, 0.3f);
+  glVertex3f(-0.3f, 0.0f, 0.3f);
+  glVertex3f(-0.3f, 0.0f, -2.0f);
 
   glEnd();
-
-  glEnable(GL_CULL_FACE);
-
-  return;
 }
 
-void showWall()
+void showCornellBox()
 {
-  //glColor4f(0.6,0.2,0.2,0);
   glDisable(GL_CULL_FACE);
 
-  //glColor3f(0.99607843137f, 0.49803921568f, 0.61176470588f);
-  //glColor3f(0.67843137254f, 0.84705882352f, 0.90196078431f);
-  //glColor3f(0.30588235294f, 0.89411764705f, 0.30588235294f);
+  // Boundary lines
+  glBegin(GL_LINES);
+  glColor3f(0.0f, 0.0f, 0.0f);
+
+  // Left top & bottom
+  glVertex3f(1.99,-1.99,-1.99); glVertex3f(-1.99,-1.99,-1.99);
+  glVertex3f(1.99,-1.99,1.99); glVertex3f(-1.99,-1.99,1.99);
+
+  // Right top & bottom
+  glVertex3f(1.99,1.99,-1.99); glVertex3f(-1.99,1.99,-1.99);
+  glVertex3f(1.99,1.99,1.99); glVertex3f(-1.99,1.99,1.99);
+
+  // Vertical lines
+  glVertex3f(-1.99,-1.99,-1.99); glVertex3f(-1.99,-1.99,1.99);
+  glVertex3f(-1.99,1.99,-1.99); glVertex3f(-1.99,1.99,1.99);
+
+  // Horizontal lines
+  glVertex3f(-1.99,1.99,-1.99); glVertex3f(-1.99,-1.99,-1.99);
+  glVertex3f(-1.99,1.99,1.99); glVertex3f(-1.99,-1.99,1.99);
+  glEnd();
 
   glBegin(GL_QUADS);
   
+  // Walls
   // Right Wall
   glColor3f(0.15686274509f, 0.36862745098f, 0.07058823529f);
-  //glNormal3f(0.0f, 1.0f, 0.0f);
   glVertex3f(-2.0f, 2.0f, 2.0f); // UR
   glVertex3f(2.0f, 2.0f, 2.0f); // UL
   glVertex3f(2.0f, 2.0f, -2.0f); // BL
@@ -376,7 +379,6 @@ void showWall()
 
   // Left Wall
   glColor3f(0.63921568627f, 0.1294117647f, 0.07843137254f);
-  //glNormal3f(0.0f, 1.0f, 0.0f);
   glVertex3f(-2.0f, -2.0f, 2.0f);
   glVertex3f(2.0f, -2.0f, 2.0f);
   glVertex3f(2.0f, -2.0f, -2.0f);
@@ -384,31 +386,27 @@ void showWall()
 
   // Ceiling Light
   glColor3f(1.0f, 1.0f, 1.0f);
-  //glNormal3f(0.0f, 0.0f, 1.0f);
   glVertex3f(0.5f, -0.5f, 1.999f);
   glVertex3f(0.5f, 0.5f, 1.999f);
   glVertex3f(-0.5f, 0.5f, 1.999f);
   glVertex3f(-0.5f, -0.5f, 1.999f);
 
   // Ceiling
-  glColor3f(0.8862745098f, 0.73333333333f, 0.43921568627f);
-  //glNormal3f(0.0f, 0.0f, 1.0f);
+  glColor3f(0.45882352941f, 0.36862745098f, 0.20784313725f);
   glVertex3f(2.0f, -2.0f, 2.0f);
   glVertex3f(2.0f, 2.0f, 2.0f);
   glVertex3f(-2.0f, 2.0f, 2.0f);
   glVertex3f(-2.0f, -2.0f, 2.0f);
 
   // Floor
-  //glColor3f(0.8862745098f, 0.73333333333f, 0.43921568627f);
-  //glNormal3f(0.0f, 0.0f, 1.0f);
+  glColor3f(0.71372549019f, 0.56862745098f, 0.35294117647f);
   glVertex3f(2.0f, -2.0f, -2.0f);
   glVertex3f(2.0f, 2.0f, -2.0f);
   glVertex3f(-2.0f, 2.0f, -2.0f);
   glVertex3f(-2.0f, -2.0f, -2.0f);
 
   // Back Wall
-  //glColor3f(0.8862745098f, 0.73333333333f, 0.43921568627f);
-  //glNormal3f(0.0f, 0.0f, 1.0f);
+  glColor3f(0.8862745098f, 0.73333333333f, 0.43921568627f);
   glVertex3f(-2.0f, -2.0f, -2.0f);
   glVertex3f(-2.0f, 2.0f, -2.0f);
   glVertex3f(-2.0f, 2.0f, 2.0f);
@@ -421,64 +419,4 @@ void showWall()
   return;
 }
 
-void showObj()
-{
-  int i,j;
-
-  glColor4f(0.6,0.6,0.6,0);
-
-  glBegin(GL_LINES);
-
-  // front face
-  for(i=-2; i<=2; i++)
-  {
-    glVertex3f(i,-2,-2);
-    glVertex3f(i,-2,2);
-  }
-  for(j=-2; j<=2; j++)
-  {
-    glVertex3f(-2,-2,j);
-    glVertex3f(2,-2,j);
-  }
-
-  // back face
-  for(i=-2; i<=2; i++)
-  {
-    glVertex3f(i,2,-2);
-    glVertex3f(i,2,2);
-  }
-  for(j=-2; j<=2; j++)
-  {
-    glVertex3f(-2,2,j);
-    glVertex3f(2,2,j);
-  }
-
-  // left face
-  for(i=-2; i<=2; i++)
-  {
-    glVertex3f(-2,i,-2);
-    glVertex3f(-2,i,2);
-  }
-  for(j=-2; j<=2; j++)
-  {
-    glVertex3f(-2,-2,j);
-    glVertex3f(-2,2,j);
-  }
-
-  // right face
-  for(i=-2; i<=2; i++)
-  {
-    glVertex3f(2,i,-2);
-    glVertex3f(2,i,2);
-  }
-  for(j=-2; j<=2; j++)
-  {
-    glVertex3f(2,-2,j);
-    glVertex3f(2,2,j);
-  }
-  
-  glEnd();
-
-  return;
-}
 

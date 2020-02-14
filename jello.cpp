@@ -17,9 +17,12 @@
 #include "stdio.h"
 //#include "pic.h"
 //#include "objloader.h"
+#include <math.h>
 
 #include <vector>
 #include <fstream>
+
+#define PI 3.14159265
 
 using namespace std;
 
@@ -64,6 +67,8 @@ class ObjLoader
 public:
   void readfile(const char* filename);
   void draw();
+  vertex rotateX(const vertex v, const double theta);
+  vertex rotateZ(const vertex v, const double theta);
 };
 
 void ObjLoader::readfile(const char *filename) 
@@ -104,7 +109,7 @@ void ObjLoader::readfile(const char *filename)
 
 void ObjLoader::draw()
 {
-  double scaleFactor = 0.7;
+  double scaleFactor = 0.5;
   double offset = 1.0;
 
   glEnable(GL_BLEND);
@@ -114,6 +119,8 @@ void ObjLoader::draw()
 
   //glColor3f(0.99607843137f, 0.49803921568f, 0.61176470588f); // Pink
   glColor4f(0.8,0.8,0.8,0.7);
+
+  vertex res;
 
   for(int i=0;i<faces.size();i++)
   {
@@ -128,17 +135,60 @@ void ObjLoader::draw()
     */
 
     //glNormal3f(n1.x+offset, n1.y+offset, n1.z+offset);
-    glVertex3f(v1.x*scaleFactor-offset, v1.y*scaleFactor+offset, v1.z*scaleFactor+offset);
-    
+    res = rotateX(v1, PI/2);
+    res = rotateZ(res, PI/2);
+    glVertex3f(
+      res.x*scaleFactor-offset,
+      res.y*scaleFactor+offset,
+      res.z*scaleFactor+offset/2
+    );
+
+    res = rotateX(v2, PI/2);
+    res = rotateZ(res, PI/2);
     //glNormal3f(n2.x+offset, n2.y+offset, n2.z+offset);
-    glVertex3f(v2.x*scaleFactor-offset, v2.y*scaleFactor+offset, v2.z*scaleFactor+offset);
+    glVertex3f(
+      res.x*scaleFactor-offset,
+      res.y*scaleFactor+offset,
+      res.z*scaleFactor+offset/2
+    );
     
+    res = rotateX(v3, PI/2);
+    res = rotateZ(res, PI/2);
     //glNormal3f(n3.x+offset, n3.y+offset, n3.z+offset);
-    glVertex3f(v3.x*scaleFactor-offset, v3.y*scaleFactor+offset, v3.z*scaleFactor+offset);
+    glVertex3f(
+      res.x*scaleFactor-offset,
+      res.y*scaleFactor+offset,
+      res.z*scaleFactor+offset/2
+    );
   }
   glEnd();
   glDisable(GL_BLEND);
 }
+
+ObjLoader::vertex ObjLoader::rotateX(const vertex v, const double theta)
+{
+  double sinTheta = sin(theta);
+  double cosTheta = cos(theta);
+  vertex res = {
+    v.x,
+    v.y * cosTheta - v.z * sinTheta,
+    v.z * cosTheta + v.y * sinTheta
+  };
+  return res;
+}
+
+ObjLoader::vertex ObjLoader::rotateZ(const vertex v, const double theta)
+{
+  double sinTheta = sin(theta);
+  double cosTheta = cos(theta);
+  vertex res = {
+    v.x * cosTheta - v.y * sinTheta,
+    v.y * cosTheta + v.x * sinTheta,
+    v.z
+  };
+  return res;
+}
+
 ObjLoader myobj;
 
 /*
@@ -210,6 +260,8 @@ void myinit()
   //texture = LoadTexture("img/flower.bmp", 319, 240);
   //glBindTexture(GL_TEXTURE_2D, texture);
   //texture= LoadTexture("img/jello.bmp");
+
+  myobj.readfile("obj/bunny.obj");
 
   return; 
 }
@@ -350,10 +402,14 @@ void display()
 
   // show the bounding box
   showBoundingBox();
+
+  // show a small box at the corner
   showSmallBox();
-  showWall();
-  //showObj();
-  myobj.readfile("obj/bunny.obj");
+
+  // show the cornell box environment
+  showCornellBox();
+
+  // show the obj that is loaded
   myobj.draw();
  
   glutSwapBuffers();
@@ -361,14 +417,13 @@ void display()
 
 void doIdle()
 {
-  char s[20]="picxxxx.ppm";
+  char s[20]="xxx.ppm";
   int i;
   
   // save screen to file
-  s[3] = 48 + (sprite / 1000);
-  s[4] = 48 + (sprite % 1000) / 100;
-  s[5] = 48 + (sprite % 100 ) / 10;
-  s[6] = 48 + sprite % 10;
+  s[0] = 48 + (sprite % 1000) / 100;
+  s[1] = 48 + (sprite % 100 ) / 10;
+  s[2] = 48 + sprite % 10;
 
   if (saveScreenToFile==1)
   {

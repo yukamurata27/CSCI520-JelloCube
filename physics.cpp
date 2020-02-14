@@ -268,12 +268,27 @@ void CollisionDetectionHelper(struct world * jello, struct point indices, struct
 
   pCPY(jello->p[px][py][pz], pOut);
   pCPY(jello->p[px][py][pz], pSurface);
+  /*
   if (pSurface.x >= 2.) pSurface.x = 2.;
   else if (pSurface.x <= -2.) pSurface.x = -2.;
   if (pSurface.y > 2.) pSurface.y = 2.;
   else if (pSurface.y <= -2.) pSurface.y = -2.;
   if (pSurface.z >= 2.) pSurface.z = 2.;
   else if (pSurface.z <= -2.) pSurface.z = -2.;
+  */
+  // Obstacle
+  if (pSurface.x <= -0.3 && 0.0 <= pSurface.y) {
+    pSurface.x = -0.3;
+    pSurface.y = 0.0;
+  } else {
+    if (pSurface.x >= 2.) pSurface.x = 2.;
+    else if (pSurface.x <= -2.) pSurface.x = -2.;
+    if (pSurface.y > 2.) pSurface.y = 2.;
+    else if (pSurface.y <= -2.) pSurface.y = -2.;
+    if (pSurface.z >= 2.) pSurface.z = 2.;
+    else if (pSurface.z <= -2.) pSurface.z = -2.;
+  }
+
   pDIFFERENCE(pOut, pSurface, L);
   pLENGTH(L, Llen);
 
@@ -292,7 +307,7 @@ void CollisionDetectionHelper(struct world * jello, struct point indices, struct
 
 bool isOutOfBox(struct point p)
 {
-  return p.x <= -2. || p.y <= -2. || p.z <= -2. || 2. <= p.x || 2. <= p.y || 2. <= p.z;
+  return p.x <= -2. || p.y <= -2. || p.z <= -2. || 2. <= p.x || 2. <= p.y || 2. <= p.z || (p.x <= -0.3 && 0.0 <= p.y);
 }
 
 void CollisionDetection(struct world * jello, struct point f[8][8][8])
