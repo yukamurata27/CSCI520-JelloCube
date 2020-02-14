@@ -4,7 +4,7 @@
   "Jello Cube" Assignment 1 starter code
 
   Your name:
-  <write your name here>
+  Yuka Murata
 
 */
 
@@ -21,8 +21,6 @@
 
 #include <vector>
 #include <fstream>
-
-#define PI 3.14159265
 
 using namespace std;
 
@@ -135,16 +133,16 @@ void ObjLoader::draw()
     */
 
     //glNormal3f(n1.x+offset, n1.y+offset, n1.z+offset);
-    res = rotateX(v1, PI/2);
-    res = rotateZ(res, PI/2);
+    res = rotateX(v1, pi/2);
+    res = rotateZ(res, pi/2);
     glVertex3f(
       res.x*scaleFactor-offset,
       res.y*scaleFactor+offset,
       res.z*scaleFactor+offset/2
     );
 
-    res = rotateX(v2, PI/2);
-    res = rotateZ(res, PI/2);
+    res = rotateX(v2, pi/2);
+    res = rotateZ(res, pi/2);
     //glNormal3f(n2.x+offset, n2.y+offset, n2.z+offset);
     glVertex3f(
       res.x*scaleFactor-offset,
@@ -152,8 +150,8 @@ void ObjLoader::draw()
       res.z*scaleFactor+offset/2
     );
     
-    res = rotateX(v3, PI/2);
-    res = rotateZ(res, PI/2);
+    res = rotateX(v3, pi/2);
+    res = rotateZ(res, pi/2);
     //glNormal3f(n3.x+offset, n3.y+offset, n3.z+offset);
     glVertex3f(
       res.x*scaleFactor-offset,

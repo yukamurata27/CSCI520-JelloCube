@@ -11,6 +11,7 @@
 #include <iostream>
 using namespace std;
 
+// Compute spring force between 2 mass points
 void SpringSystemHelper(struct world * jello, struct point indexA, struct point indexB, struct point &f)
 {
   int Ax = indexA.x, Ay = indexA.y, Az = indexA.z;
@@ -35,6 +36,7 @@ void SpringSystemHelper(struct world * jello, struct point indexA, struct point 
   pSUM(f, FTmp, f);
 }
 
+// Compute all the mass-spring system
 void SpringSystem(struct world * jello, struct point f[8][8][8])
 {
   int i, j, k;
@@ -87,8 +89,6 @@ void SpringSystem(struct world * jello, struct point f[8][8][8])
           indexB.z = k+1;
           SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
-
-        //cout << "Result: " << f[i][j][k].x << ", " << f[i][j][k].y << ", " << f[i][j][k].z << endl;
 
         // Shear springs (20 connections)
         // On x = 0 plane
@@ -216,8 +216,6 @@ void SpringSystem(struct world * jello, struct point f[8][8][8])
           SpringSystemHelper(jello, indexA, indexB, f[i][j][k]);
         }
 
-        //cout << "Result: " << f[i][j][k].x << ", " << f[i][j][k].y << ", " << f[i][j][k].z << endl;
-
         // Bend springs (6 connections)
         if (i > 1) {
           indexB.x = i-2;
@@ -260,6 +258,7 @@ void SpringSystem(struct world * jello, struct point f[8][8][8])
       }
 }
 
+// Compute force from collision on a vertex
 void CollisionDetectionHelper(struct world * jello, struct point indices, struct point &f)
 {
   int px = indices.x, py = indices.y, pz = indices.z;
@@ -268,19 +267,12 @@ void CollisionDetectionHelper(struct world * jello, struct point indices, struct
 
   pCPY(jello->p[px][py][pz], pOut);
   pCPY(jello->p[px][py][pz], pSurface);
-  /*
-  if (pSurface.x >= 2.) pSurface.x = 2.;
-  else if (pSurface.x <= -2.) pSurface.x = -2.;
-  if (pSurface.y > 2.) pSurface.y = 2.;
-  else if (pSurface.y <= -2.) pSurface.y = -2.;
-  if (pSurface.z >= 2.) pSurface.z = 2.;
-  else if (pSurface.z <= -2.) pSurface.z = -2.;
-  */
+
   // Obstacle
   if (pSurface.x <= -0.3 && 0.0 <= pSurface.y) {
     pSurface.x = -0.3;
     pSurface.y = 0.0;
-  } else {
+  } else { // Bounding box
     if (pSurface.x >= 2.) pSurface.x = 2.;
     else if (pSurface.x <= -2.) pSurface.x = -2.;
     if (pSurface.y > 2.) pSurface.y = 2.;
@@ -305,11 +297,13 @@ void CollisionDetectionHelper(struct world * jello, struct point indices, struct
   pSUM(f, FTmp, f);
 }
 
+// Boundary check
 bool isOutOfBox(struct point p)
 {
   return p.x <= -2. || p.y <= -2. || p.z <= -2. || 2. <= p.x || 2. <= p.y || 2. <= p.z || (p.x <= -0.3 && 0.0 <= p.y);
 }
 
+// Collision Handling
 void CollisionDetection(struct world * jello, struct point f[8][8][8])
 {
   int i, j, k;
@@ -330,6 +324,7 @@ void CollisionDetection(struct world * jello, struct point f[8][8][8])
       }
 }
 
+// Interpolated external force field
 void ForceField(struct world * jello, struct point f[8][8][8])
 {
   if (jello->resolution == 0) return;
@@ -344,7 +339,7 @@ void ForceField(struct world * jello, struct point f[8][8][8])
         // Initialize
         pSUM(jello->p[i][j][k], offset, Pshift);
 
-        // Boundary check
+        // Clamping
         if (4.0 < Pshift.x) Pshift.x = 4.0;
         else if (Pshift.x < 0.0) Pshift.x = 0.0;
         if (4.0 < Pshift.y) Pshift.y = 4.0;
@@ -388,6 +383,7 @@ void computeAcceleration(struct world * jello, struct point a[8][8][8])
 {
   int i, j, k;
   point FAll[8][8][8], FSpring[8][8][8], FPenalty[8][8][8], FForceField[8][8][8];
+  
   SpringSystem(jello, FSpring);
   CollisionDetection(jello, FPenalty);
   ForceField(jello, FForceField);

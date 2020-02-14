@@ -22,9 +22,10 @@ USC ID: 6434262018
 * The Cornell Box environment
 * Obj file handling
   - Loading
-  - Rotation
-  - Translation
-  - Scaling
+  - Matrix Transformation
+    - Rotation
+    - Translation
+    - Scaling
   - Drawing (Referred to stackoverflow: https://stackoverflow.com/questions/23319490/loading-obj-file-using-c-and-opengl)
 * An transparent obj
 * Collision handling with an obj (using a simple bounding box)
