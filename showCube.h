@@ -14,6 +14,7 @@ void LoadTexture(const char * filename, int width, int height);
 void showCube(struct world * jello);
 
 void showBoundingBox();
+void showWall();
 void showSmallBox();
 
 #endif

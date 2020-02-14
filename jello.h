@@ -16,6 +16,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+//#include "objloader.h"
+
 #define pi 3.141592653589793238462643383279 
 
 // camera angles
@@ -33,6 +35,8 @@ extern int g_iLeftMouseButton,g_iMiddleMouseButton,g_iRightMouseButton;
 // Texture
 extern GLuint texture;
 //extern Pic mypic;
+
+//extern ObjLoader myobj;
 
 struct point 
 {

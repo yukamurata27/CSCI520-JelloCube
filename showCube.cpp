@@ -355,3 +355,130 @@ void showSmallBox()
   return;
 }
 
+void showWall()
+{
+  //glColor4f(0.6,0.2,0.2,0);
+  glDisable(GL_CULL_FACE);
+
+  //glColor3f(0.99607843137f, 0.49803921568f, 0.61176470588f);
+  //glColor3f(0.67843137254f, 0.84705882352f, 0.90196078431f);
+  //glColor3f(0.30588235294f, 0.89411764705f, 0.30588235294f);
+
+  glBegin(GL_QUADS);
+  
+  // Right Wall
+  glColor3f(0.15686274509f, 0.36862745098f, 0.07058823529f);
+  //glNormal3f(0.0f, 1.0f, 0.0f);
+  glVertex3f(-2.0f, 2.0f, 2.0f); // UR
+  glVertex3f(2.0f, 2.0f, 2.0f); // UL
+  glVertex3f(2.0f, 2.0f, -2.0f); // BL
+  glVertex3f(-2.0f, 2.0f, -2.0f); // BR
+
+  // Left Wall
+  glColor3f(0.63921568627f, 0.1294117647f, 0.07843137254f);
+  //glNormal3f(0.0f, 1.0f, 0.0f);
+  glVertex3f(-2.0f, -2.0f, 2.0f);
+  glVertex3f(2.0f, -2.0f, 2.0f);
+  glVertex3f(2.0f, -2.0f, -2.0f);
+  glVertex3f(-2.0f, -2.0f, -2.0f);
+
+  // Ceiling Light
+  glColor3f(1.0f, 1.0f, 1.0f);
+  //glNormal3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(0.5f, -0.5f, 1.999f);
+  glVertex3f(0.5f, 0.5f, 1.999f);
+  glVertex3f(-0.5f, 0.5f, 1.999f);
+  glVertex3f(-0.5f, -0.5f, 1.999f);
+
+  // Ceiling
+  glColor3f(0.8862745098f, 0.73333333333f, 0.43921568627f);
+  //glNormal3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(2.0f, -2.0f, 2.0f);
+  glVertex3f(2.0f, 2.0f, 2.0f);
+  glVertex3f(-2.0f, 2.0f, 2.0f);
+  glVertex3f(-2.0f, -2.0f, 2.0f);
+
+  // Floor
+  //glColor3f(0.8862745098f, 0.73333333333f, 0.43921568627f);
+  //glNormal3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(2.0f, -2.0f, -2.0f);
+  glVertex3f(2.0f, 2.0f, -2.0f);
+  glVertex3f(-2.0f, 2.0f, -2.0f);
+  glVertex3f(-2.0f, -2.0f, -2.0f);
+
+  // Back Wall
+  //glColor3f(0.8862745098f, 0.73333333333f, 0.43921568627f);
+  //glNormal3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(-2.0f, -2.0f, -2.0f);
+  glVertex3f(-2.0f, 2.0f, -2.0f);
+  glVertex3f(-2.0f, 2.0f, 2.0f);
+  glVertex3f(-2.0f, -2.0f, 2.0f);
+
+  glEnd();
+
+  glEnable(GL_CULL_FACE);
+
+  return;
+}
+
+void showObj()
+{
+  int i,j;
+
+  glColor4f(0.6,0.6,0.6,0);
+
+  glBegin(GL_LINES);
+
+  // front face
+  for(i=-2; i<=2; i++)
+  {
+    glVertex3f(i,-2,-2);
+    glVertex3f(i,-2,2);
+  }
+  for(j=-2; j<=2; j++)
+  {
+    glVertex3f(-2,-2,j);
+    glVertex3f(2,-2,j);
+  }
+
+  // back face
+  for(i=-2; i<=2; i++)
+  {
+    glVertex3f(i,2,-2);
+    glVertex3f(i,2,2);
+  }
+  for(j=-2; j<=2; j++)
+  {
+    glVertex3f(-2,2,j);
+    glVertex3f(2,2,j);
+  }
+
+  // left face
+  for(i=-2; i<=2; i++)
+  {
+    glVertex3f(-2,i,-2);
+    glVertex3f(-2,i,2);
+  }
+  for(j=-2; j<=2; j++)
+  {
+    glVertex3f(-2,-2,j);
+    glVertex3f(-2,2,j);
+  }
+
+  // right face
+  for(i=-2; i<=2; i++)
+  {
+    glVertex3f(2,i,-2);
+    glVertex3f(2,i,2);
+  }
+  for(j=-2; j<=2; j++)
+  {
+    glVertex3f(2,-2,j);
+    glVertex3f(2,2,j);
+  }
+  
+  glEnd();
+
+  return;
+}
+
