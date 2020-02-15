@@ -28,7 +28,7 @@ USC ID: 6434262018
     - Scaling
   - Rendering (Referred to stackoverflow: https://stackoverflow.com/questions/23319490/loading-obj-file-using-c-and-opengl)
 * A transparent obj
-* Collision handling with an obj (using a simple bounding box)
+* Collision handling with an obj and a small box
 * Texture mapping (Referred to https://wrf.ecse.rpi.edu/wiki/ComputerGraphicsFall2013/guha/Code/loadTextures.cpp)
   - Texture mapping on Jello was difficult because of GL_TRIANGLE_STRIP...
 

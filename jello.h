@@ -33,8 +33,6 @@ extern int g_vMousePos[2];
 extern int g_iLeftMouseButton,g_iMiddleMouseButton,g_iRightMouseButton;
 
 // Texture
-extern GLuint texture;
-//extern Pic mypic;
 extern GLuint texHandle;
 
 //extern ObjLoader myobj;

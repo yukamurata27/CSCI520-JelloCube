@@ -9,8 +9,6 @@
 #ifndef _SHOWCUBE_H_
 #define _SHOWCUBE_H_
 
-void LoadTexture(const char * filename, int width, int height);
-
 void showCube(struct world * jello);
 void showBoundingBox();
 void showCornellBox();

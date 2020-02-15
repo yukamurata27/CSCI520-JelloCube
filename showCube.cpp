@@ -155,9 +155,6 @@ void showCube(struct world * jello)
   else
   {
     glPolygonMode(GL_FRONT, GL_FILL); 
-    
-    //glEnable(GL_TEXTURE_2D);
-    //glBindTexture(GL_TEXTURE_2D, texture);
 
     for (face=1; face <= 6; face++) 
       // face == face of a cube
@@ -215,48 +212,34 @@ void showCube(struct world * jello)
           else
             glFrontFace(GL_CW); // flip definition of orientation
 
+          // Use texture
           glEnable(GL_TEXTURE_2D);
           glBindTexture(GL_TEXTURE_2D, texHandle); 
-          //glEnable(GL_BLEND);
-          //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
           glBegin(GL_TRIANGLE_STRIP);
           int mycounter = 0;
-          for (i=0; i<=7; i++) // vertical for (i=0; i<=7; i++) // only 6 works with glTexCoord2i(1, myidx/3); and glTexCoord2i(0, myidx/3);
+
+          for (i=0; i<=7; i++)
           {
-            //double myidx = floor(i/2);
-            //std::cout << "i = " << i << ", myidx = " << myidx << ", *** = " << myidx/3 << std::endl;
-            //if (i == 4) glTexCoord2i(myidx/2, 1); //glTexCoord2i(myidx/3, 1);
+            // Assign texel
             if (mycounter%4 == 0) glTexCoord2i(0, 1);
             else if (mycounter%4 == 1) glTexCoord2i(0, 0);
             else if (mycounter%4 == 2) glTexCoord2i(1, 1);
             else if (mycounter%4 == 3) glTexCoord2i(1, 0);
-
-            //else glTexCoord2i(1, 1);
-            //if (i == 0) glTexCoord2i(0, 1);
-            //else if (i == 1) glTexCoord2i(0, 1);
-            //glNormal3f(1, 1, 1);
-            //glColor4f(1.0, 0.76862745098, 0.89411764705, 0.1);
-            //glNormal3f(normal[i][j].x / counter[i][j],normal[i][j].y / counter[i][j],
-              //normal[i][j].z / counter[i][j]);
+            // Pass a vertex
             glVertex3f(NODE(face,i,j).x, NODE(face,i,j).y, NODE(face,i,j).z);
-
             mycounter++;
-            
-            //glTexCoord2i(myidx/3, 0);
+
+            // Assign texel
             if (mycounter%4 == 0) glTexCoord2i(0, 1);
             else if (mycounter%4 == 1) glTexCoord2i(0, 0);
             else if (mycounter%4 == 2) glTexCoord2i(1, 1);
             else if (mycounter%4 == 3) glTexCoord2i(1, 0);
-            //glNormal3f(0, 0, 0);
-            //glNormal3f(normal[i][j-1].x / counter[i][j-1],normal[i][j-1].y/ counter[i][j-1],
-              //normal[i][j-1].z / counter[i][j-1]);
-            //glColor4f(1.0, 0.76862745098, 0.89411764705, 0.1);
+            // Pass a vertex
             glVertex3f(NODE(face,i,j-1).x, NODE(face,i,j-1).y, NODE(face,i,j-1).z);
-
             mycounter++;
           }
           glEnd();
-          //glDisable(GL_BLEND);
           glDisable(GL_TEXTURE_2D);
         }
 
@@ -328,10 +311,6 @@ void showBoundingBox()
 
 void showSmallBox()
 {
-  //glColor3f(0.99607843137f, 0.49803921568f, 0.61176470588f);
-  //glColor3f(0.67843137254f, 0.84705882352f, 0.90196078431f);
-  //glColor3f(0.30588235294f, 0.89411764705f, 0.30588235294f);
-
   glBegin(GL_QUADS); // Normal is RHS coord
 
   // Top
@@ -431,7 +410,6 @@ void showCornellBox()
   glVertex3f(-2.0f, -2.0f, 2.0f);
 
   glEnd();
-
   glEnable(GL_CULL_FACE);
 
   return;

@@ -269,12 +269,16 @@ void CollisionDetectionHelper(struct world * jello, struct point indices, struct
   pCPY(jello->p[px][py][pz], pSurface);
 
   // Obstacle
-  if (pSurface.x <= -0.3 && 0.0 <= pSurface.y) {
+  if (pSurface.x <= -0.3 && 0.0 <= pSurface.y)
+  {
     // equation to choose the closest surface point is
     // y = -(2.0/1.7)x -6/17 <=> (2.0/1.7)x + y + 6/17 = 0
-    if (2.0/1.7*pSurface.x + pSurface.y + 6/17 >= 0) pSurface.x = -0.3;
+    if (2.0/1.7*pSurface.x + pSurface.y + 6.0/17.0 >= 0.0) pSurface.x = -0.3;
     else pSurface.y = 0.0;
-  } else { // Bounding box
+  }
+  // Bounding box
+  else
+  {
     if (pSurface.x >= 2.) pSurface.x = 2.;
     else if (pSurface.x <= -2.) pSurface.x = -2.;
     if (pSurface.y > 2.) pSurface.y = 2.;
@@ -299,7 +303,7 @@ void CollisionDetectionHelper(struct world * jello, struct point indices, struct
   pSUM(f, FTmp, f);
 }
 
-// Boundary check
+// Collision check
 bool isOutOfBox(struct point p)
 {
   return p.x <= -2. || p.y <= -2. || p.z <= -2. || 2. <= p.x || 2. <= p.y || 2. <= p.z || (p.x <= -0.3 && 0.0 <= p.y);

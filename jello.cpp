@@ -239,7 +239,7 @@ void loadTextures()
    BitMapFile *image[1];
    
    // Load the texture.
-   image[0] = getBMPData("img/glass_w.bmp"); 
+   image[0] = getBMPData("img/jello-sm.bmp"); 
 
    // Activate texture index texture[0]. 
    glBindTexture(GL_TEXTURE_2D, texHandle); 
