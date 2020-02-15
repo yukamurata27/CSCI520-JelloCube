@@ -16,7 +16,6 @@
 #include <stdlib.h>
 
 #include "imageloader.h"
-//#include "objloader.h"
 
 #define pi 3.141592653589793238462643383279 
 
@@ -31,8 +30,6 @@ extern int sprite;
 // mouse control
 extern int g_vMousePos[2];
 extern int g_iLeftMouseButton,g_iMiddleMouseButton,g_iRightMouseButton;
-
-//extern ObjLoader myobj;
 
 struct point 
 {
