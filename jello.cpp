@@ -238,7 +238,7 @@ void doIdle()
     sprite++;
   }
 
-  if (sprite >= 300) // allow only 300 snapshots
+  if (sprite >= 600) // allow only 300 snapshots
   {
     exit(0);	
   }

@@ -3,3 +3,9 @@
 
 # Executables
 *.exe
+createWorld
+jello
+
+# Images
+screenshots/
+jpgs/
