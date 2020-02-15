@@ -7,6 +7,7 @@
 
 #include "jello.h"
 #include "showCube.h"
+#include <iostream>
 
 int pointMap(int side, int i, int j)
 {
@@ -206,7 +207,7 @@ void showCube(struct world * jello)
 
       
         /* the actual rendering */
-        for (j=1; j<=7; j++) 
+        for (j=1; j<=7; j++) // horizontal // for (j=1; j<=7; j++)
         {
 
           if (faceFactor  > 0)
@@ -214,35 +215,52 @@ void showCube(struct world * jello)
           else
             glFrontFace(GL_CW); // flip definition of orientation
 
-          glEnable(GL_BLEND);
-          glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+          glEnable(GL_TEXTURE_2D);
+          glBindTexture(GL_TEXTURE_2D, texHandle); 
+          //glEnable(GL_BLEND);
+          //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
           glBegin(GL_TRIANGLE_STRIP);
-          for (i=0; i<=7; i++)
+          int mycounter = 0;
+          for (i=0; i<=7; i++) // vertical for (i=0; i<=7; i++) // only 6 works with glTexCoord2i(1, myidx/3); and glTexCoord2i(0, myidx/3);
           {
-            int myidx = floor(i/2);
-            //glTexCoord2i(0, myidx/3);
+            //double myidx = floor(i/2);
+            //std::cout << "i = " << i << ", myidx = " << myidx << ", *** = " << myidx/3 << std::endl;
+            //if (i == 4) glTexCoord2i(myidx/2, 1); //glTexCoord2i(myidx/3, 1);
+            if (mycounter%4 == 0) glTexCoord2i(0, 1);
+            else if (mycounter%4 == 1) glTexCoord2i(0, 0);
+            else if (mycounter%4 == 2) glTexCoord2i(1, 1);
+            else if (mycounter%4 == 3) glTexCoord2i(1, 0);
+
+            //else glTexCoord2i(1, 1);
+            //if (i == 0) glTexCoord2i(0, 1);
+            //else if (i == 1) glTexCoord2i(0, 1);
             //glNormal3f(1, 1, 1);
-            glColor4f(1.0, 0.76862745098, 0.89411764705, 0.1);
+            //glColor4f(1.0, 0.76862745098, 0.89411764705, 0.1);
             //glNormal3f(normal[i][j].x / counter[i][j],normal[i][j].y / counter[i][j],
               //normal[i][j].z / counter[i][j]);
             glVertex3f(NODE(face,i,j).x, NODE(face,i,j).y, NODE(face,i,j).z);
+
+            mycounter++;
             
-            //glTexCoord2i(1, myidx/3);
+            //glTexCoord2i(myidx/3, 0);
+            if (mycounter%4 == 0) glTexCoord2i(0, 1);
+            else if (mycounter%4 == 1) glTexCoord2i(0, 0);
+            else if (mycounter%4 == 2) glTexCoord2i(1, 1);
+            else if (mycounter%4 == 3) glTexCoord2i(1, 0);
             //glNormal3f(0, 0, 0);
             //glNormal3f(normal[i][j-1].x / counter[i][j-1],normal[i][j-1].y/ counter[i][j-1],
               //normal[i][j-1].z / counter[i][j-1]);
-            glColor4f(1.0, 0.76862745098, 0.89411764705, 0.1);
+            //glColor4f(1.0, 0.76862745098, 0.89411764705, 0.1);
             glVertex3f(NODE(face,i,j-1).x, NODE(face,i,j-1).y, NODE(face,i,j-1).z);
+
+            mycounter++;
           }
           glEnd();
-          glDisable(GL_BLEND);
+          //glDisable(GL_BLEND);
+          glDisable(GL_TEXTURE_2D);
         }
-        
-        
-    }
-    //glDisable(GL_TEXTURE_2D);
-    //glBindTexture(GL_TEXTURE_2D, 0);
 
+    }
   } // end for loop over faces
   glFrontFace(GL_CCW);
 }

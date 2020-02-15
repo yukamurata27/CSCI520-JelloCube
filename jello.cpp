@@ -15,7 +15,6 @@
 #include <iostream>
 #include "string.h"
 #include "stdio.h"
-//#include "pic.h"
 //#include "objloader.h"
 #include <math.h>
 
@@ -44,9 +43,7 @@ struct world jello;
 
 int windowWidth, windowHeight;
 
-//GLuint texture;
-//Pic mypic;
-//ObjLoader myobj;
+GLuint texHandle; // texture
 
 class ObjLoader
 {
@@ -189,52 +186,76 @@ ObjLoader::vertex ObjLoader::rotateZ(const vertex v, const double theta)
 
 ObjLoader myobj;
 
-/*
-GLuint LoadTexture( const char * filename )
+struct BitMapFile
 {
-  GLuint texture;
+   int sizeX;
+   int sizeY;
+   unsigned char *data;
+};
 
-  int width, height;
+BitMapFile *getBMPData(string filename)
+{
+   BitMapFile *bmp = new BitMapFile;
+   unsigned int size, offset, headerSize;
+  
+   // Read input file name.
+   ifstream infile(filename.c_str(), ios::binary);
+ 
+   // Get the starting point of the image data.
+   infile.seekg(10);
+   infile.read((char *) &offset, 4); 
+   
+   // Get the header size of the bitmap.
+   infile.read((char *) &headerSize,4);
 
-  unsigned char * data;
+   // Get width and height values in the bitmap header.
+   infile.seekg(18);
+   infile.read( (char *) &bmp->sizeX, 4);
+   infile.read( (char *) &bmp->sizeY, 4);
 
-  FILE * file;
+   // Allocate buffer for the image.
+   size = bmp->sizeX * bmp->sizeY * 24;
+   bmp->data = new unsigned char[size];
 
-  file = fopen( filename, "rb" );
+   // Read bitmap data.
+   infile.seekg(offset);
+   infile.read((char *) bmp->data , size);
+   
+   // Reverse color from bgr to rgb.
+   int temp;
+   for (int i = 0; i < size; i += 3)
+   { 
+      temp = bmp->data[i];
+    bmp->data[i] = bmp->data[i+2];
+    bmp->data[i+2] = temp;
+   }
 
-  if ( file == NULL ) return 0;
-  width = 1024;
-  height = 512;
-  data = (unsigned char *)malloc( width * height * 3 );
-  //int size = fseek(file,);
-  fread( data, width * height * 3, 1, file );
-  fclose( file );
-
-  for(int i = 0; i < width * height ; ++i)
-  {
-    int index = i*3;
-    unsigned char B,R;
-    B = data[index];
-    R = data[index+2];
-
-    data[index] = R;
-    data[index+2] = B;
-  }
-
-  glGenTextures( 1, &texture );
-  glBindTexture( GL_TEXTURE_2D, texture );
-  glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,GL_MODULATE );
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST );
-
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,GL_LINEAR );
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,GL_REPEAT );
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,GL_REPEAT );
-  gluBuild2DMipmaps( GL_TEXTURE_2D, 3, width, height,GL_RGB, GL_UNSIGNED_BYTE, data );
-  free( data );
-
-  return texture;
+   return bmp;
 }
-*/
+
+void loadTextures()     
+{
+   // Local storage for bmp image data.
+   BitMapFile *image[1];
+   
+   // Load the texture.
+   image[0] = getBMPData("img/glass_w.bmp"); 
+
+   // Activate texture index texture[0]. 
+   glBindTexture(GL_TEXTURE_2D, texHandle); 
+
+   // Set texture parameters for wrapping.
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+   // Set texture parameters for filtering.
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+   // Specify an image as the texture to be bound with the currently active texture index.
+   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image[0]->sizeX, image[0]->sizeY, 0, 
+              GL_RGB, GL_UNSIGNED_BYTE, image[0]->data);
+}
 
 void myinit()
 {
@@ -252,13 +273,11 @@ void myinit()
   glEnable(GL_POLYGON_SMOOTH);
   glEnable(GL_LINE_SMOOTH);
 
-  //texture = 0;
-  //ppm_read("img/jello.ppm", pic_alloc(319, 240, 3, &mypic));
-  //LoadTexture("img/flower.bmp", 319, 240);
-  //texture = LoadTexture("img/flower.bmp", 319, 240);
-  //glBindTexture(GL_TEXTURE_2D, texture);
-  //texture= LoadTexture("img/jello.bmp");
+  // Load and set texture image
+  glGenTextures(1, &texHandle);
+  loadTextures();
 
+  // Load obj file
   myobj.readfile("obj/bunny.obj");
 
   return; 
@@ -439,7 +458,12 @@ void doIdle()
   {
     // insert code which appropriately performs one step of the cube simulation:
     if (strcmp(jello.integrator, "RK4") == 0) RK4(&jello);
-    else Euler(&jello);
+    else if (strcmp(jello.integrator, "Euler") == 0) Euler(&jello);
+    else
+    {
+      printf ("Oops! Your specified integrator doesn't exist!\n");
+      exit(0);
+    }
   }
 
   glutPostRedisplay();

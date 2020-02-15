@@ -26,6 +26,11 @@ USC ID: 6434262018
     - Rotation
     - Translation
     - Scaling
-  - Drawing (Referred to stackoverflow: https://stackoverflow.com/questions/23319490/loading-obj-file-using-c-and-opengl)
-* An transparent obj
+  - Rendering (Referred to stackoverflow: https://stackoverflow.com/questions/23319490/loading-obj-file-using-c-and-opengl)
+* A transparent obj
 * Collision handling with an obj (using a simple bounding box)
+* Texture mapping (Referred to https://wrf.ecse.rpi.edu/wiki/ComputerGraphicsFall2013/guha/Code/loadTextures.cpp)
+  - Texture mapping on Jello was difficult because of GL_TRIANGLE_STRIP...
+
+<Comment>
+Thanks for grading and hope you enjoy my program! :)

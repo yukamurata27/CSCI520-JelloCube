@@ -270,8 +270,10 @@ void CollisionDetectionHelper(struct world * jello, struct point indices, struct
 
   // Obstacle
   if (pSurface.x <= -0.3 && 0.0 <= pSurface.y) {
-    pSurface.x = -0.3;
-    pSurface.y = 0.0;
+    // equation to choose the closest surface point is
+    // y = -(2.0/1.7)x -6/17 <=> (2.0/1.7)x + y + 6/17 = 0
+    if (2.0/1.7*pSurface.x + pSurface.y + 6/17 >= 0) pSurface.x = -0.3;
+    else pSurface.y = 0.0;
   } else { // Bounding box
     if (pSurface.x >= 2.) pSurface.x = 2.;
     else if (pSurface.x <= -2.) pSurface.x = -2.;
