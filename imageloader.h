@@ -15,6 +15,6 @@ struct BitMapFile
 };
 
 BitMapFile *getBMPData(std::string filename);
-void loadTextures();
+void loadTextures(std::string filename);
 
 #endif

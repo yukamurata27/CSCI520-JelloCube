@@ -64,7 +64,7 @@ void myinit()
 
   // Load and set texture image
   glGenTextures(1, &texHandle);
-  loadTextures();
+  loadTextures("img/jello-sm.bmp");
 
   // Load obj file
   myobj.readfile("obj/bunny.obj");

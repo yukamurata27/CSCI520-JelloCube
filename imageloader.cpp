@@ -45,13 +45,13 @@ BitMapFile *getBMPData(string filename)
 	return bmp;
 }
 
-void loadTextures()
+void loadTextures(string filename)
 {
 	// Local storage for bmp image data.
 	BitMapFile *image[1];
    
 	// Load the texture.
-	image[0] = getBMPData("img/jello-sm.bmp"); 
+	image[0] = getBMPData(filename);
 
 	// Activate texture index texture[0]. 
 	glBindTexture(GL_TEXTURE_2D, texHandle); 
