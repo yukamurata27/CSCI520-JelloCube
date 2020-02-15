@@ -1,4 +1,4 @@
-# Jello Cube (C++)
+# Jello Cube (OpenGL and C++)
 A Jello cube simulation of a mass-spring system as part of the USC CSCI 520 in February 2020.
 
 
