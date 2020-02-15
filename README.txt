@@ -18,6 +18,9 @@ USC ID: 6434262018
     - Collision detection and penalty method
     - Allow an external force field with trilinear interpolation
 
+<Animation jpgs>
+Please find the jpg files under the "jpgs" folder.
+
 <Extra Credit>
 * The Cornell Box environment
 * Obj file handling
@@ -31,6 +34,7 @@ USC ID: 6434262018
 * Collision handling with an obj and a small box
 * Texture mapping (Referred to https://wrf.ecse.rpi.edu/wiki/ComputerGraphicsFall2013/guha/Code/loadTextures.cpp)
   - Texture mapping on Jello was difficult because of GL_TRIANGLE_STRIP...
+  - Please take a close look
 
 <Comment>
 Thanks for grading and hope you enjoy my program! :)
