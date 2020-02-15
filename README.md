@@ -1,5 +1,6 @@
-# CSCI520-JelloCube
-A Jello cube simulation of a mass-spring system as part of the USC CSCI 520 in Spring 2020.
+# Jello Cube (C++)
+A Jello cube simulation of a mass-spring system as part of the USC CSCI 520 in February 2020.
+
 
 ## Features
 #### 1) Mass-Spring Simulation
@@ -7,7 +8,7 @@ A Jello cube simulation of a mass-spring system as part of the USC CSCI 520 in S
 - Shear springs
 - Bend springs
 
-#### 2) Newton's Law on
+#### 2) Newton's Law with
 - Hook's Law
 - Damping
 - Collision detection and penalty method
@@ -17,11 +18,6 @@ A Jello cube simulation of a mass-spring system as part of the USC CSCI 520 in S
 - Euler
 - RK4
 
-#### 4) Monte Carlo and Importance Sampling
-- Cosine sampling for diffuse surface
-- Direct light sampling
-- Metal surface
-- Glass sphere
 
 ## Extra Features
 #### 1) The Cornell Box scene
@@ -35,8 +31,10 @@ A Jello cube simulation of a mass-spring system as part of the USC CSCI 520 in S
 #### 5) Texture mapping
 - Please take a close look at the Jello cube
 
+
 ## Environment
 Implementation was done in MacOS Catalina.
+
 
 ## Building
 #### 1) Open Terminal and go to the project directory.
@@ -44,6 +42,7 @@ Implementation was done in MacOS Catalina.
 ```
 make
 ```
+
 
 ## Usage
 #### 1) In the current directory, execute:
@@ -60,12 +59,14 @@ make
 - p: pause on/off
 - z: camera zoom in
 - x: camera zoom out
-- Camera control: right mouse button + move mouse
+- Right mouse button + move mouse: Camera control
 - e: reset camera to default position
+
 
 ## Snapshot
 #### 1) jello.w
 ![Cornell Box](readme_content/sample.jpg)
+
 
 ## Course Links
 1) USC Viterbi School of Engineering [CSCI 520](http://barbic.usc.edu/cs520-s20/)
