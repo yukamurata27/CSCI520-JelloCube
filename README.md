@@ -1,5 +1,5 @@
 # Jello Cube (OpenGL and C++)
-A Jello cube simulation of a mass-spring system as part of the USC CSCI 520 in February 2020.
+A Jello cube simulation of a mass-spring system as part of USC CSCI 520 in February 2020.
 
 
 ## Features
@@ -63,9 +63,8 @@ make
 - e: reset camera to default position
 
 
-## Snapshot
-#### 1) jello.w
-![Cornell Box](readme_content/sample.jpg)
+## Demo
+![Cornell Box](readme_content/demo.gif)
 
 
 ## Course Links
